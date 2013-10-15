@@ -6,7 +6,7 @@ import os.path
 import json
 import httplib2
 import oauth2client.client
-
+import glob
 
 
 class RequestException(Exception):
@@ -46,19 +46,14 @@ class Command(object):
         self.http = httplib2.Http()
         self.http = credentials.authorize(self.http)
 
-    def __init__(self, *files, **kw):
-        self.files = files
-        self.kw = kw
-
-        self.connect()
-
+    def upload (self, files):
         response, content = self.request(
             "https://www.googleapis.com/mapsengine/create_tt/rasters/upload?projectId=%s" % self.kw['projectid'], method="POST", body = {
                 "name": self.kw.get("name", "Unnamed map"),
                 "description": self.kw.get("description", ""),
                 "files": [
                     { "filename": os.path.split(file)[1] }
-                    for file in self.files],
+                    for file in files],
                 "acquisitionTime": self.kw.get("time", datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")),
                 "sharedAccessList": self.kw.get("acl", "Map Editors"),
                 "attribution": self.kw["attribution"],
@@ -69,7 +64,7 @@ class Command(object):
         self.image_id = str(content['id'])
         print "Image id: " + self.image_id
 
-        for file in self.files:
+        for file in files:
             with open(file) as f:
                 print os.path.split(file)[1] + "...",
                 response, content = self.request(
@@ -78,6 +73,20 @@ class Command(object):
                     as_json=False,
                     body = f.read())
                 print "DONE"
+	
+    def __init__(self, *files, **kw):
+        self.kw = kw
+
+        self.connect()
+
+        if self.kw.get("multi", 0):
+            for pattern in files:
+                for file in glob.glob(pattern):
+                    self.upload ([file])
+        else:
+            self.upload (files)
+		
+		
 
 
 keywords = {}
@@ -95,9 +104,9 @@ for arg in sys.argv[1:]:
 if not files or "help" in keywords:
     print """Usage: mapsengineupload --email=EMAIL --projectid=PROJECTID --attribution=ATTRNAME OPTIONS FILENAMES...
 
-FILENAME can use standard wildcards e.g. '*.tiff'
-
 Uploads a single raster image.  Specify the primary image file first, and optionally any additional supporting files
+Specify --multi to upload multiple raster images
+with --multi, FILENAME can use standard wildcards e.g. '*.tiff'
 
 Available options:
 
@@ -112,6 +121,8 @@ Available options:
 --acl=Map Editors                                  Access control for resource
 --attribution=Public Domain                        Resource copyright
 --tags=tag1,tag2...                                Tags for resource
+--multi											   Upload multiple raster images.  Assumes each specified file is
+												   a separate raster
 """
 else:
     Command(*files, **keywords)
