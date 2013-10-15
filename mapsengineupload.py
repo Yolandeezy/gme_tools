@@ -7,6 +7,8 @@ import json
 import httplib2
 import oauth2client.client
 
+
+
 class RequestException(Exception):
     def __init__(self, response, content, url, kw):
         self.response = response
@@ -92,6 +94,11 @@ for arg in sys.argv[1:]:
 
 if not files or "help" in keywords:
     print """Usage: mapsengineupload --email=EMAIL --projectid=PROJECTID --attribution=ATTRNAME OPTIONS FILENAMES...
+
+FILENAME can use standard wildcards e.g. '*.tiff'
+
+Uploads a single raster image.  Specify the primary image file first, and optionally any additional supporting files
+
 Available options:
 
 --projectid=CID                                    Maps Engine project ID (not API project id!)
