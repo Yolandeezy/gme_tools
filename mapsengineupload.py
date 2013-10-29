@@ -20,21 +20,25 @@ class RequestException(Exception):
     def __repr__(self): return unicode(self)
 
 class Command(object):
-    def request(self, url, as_json=True, raise_errors=True, **kw):
-        kw['headers'] = dict(kw.get('headers', {}))
-        if 'body' in kw and as_json:
-            kw['body'] = json.dumps(kw['body'])
-            kw['headers']["Content-Type"] = "application/json"
-        response, content = self.http.request(url, **kw)
-        try:
-            content = json.loads(content)
-        except:
-            pass
-        response['status'] = int(response['status'])
-        if raise_errors:
-            if response['status'] < 200 or response['status'] > 299:
-                raise RequestException(response, content, url, kw)
-        return response, content
+    def request(self, url, as_json=True, raise_errors=True, retries=3, **kw):
+        while retries:
+            retries -= 1
+             kw['headers'] = dict(kw.get('headers', {}))
+             if 'body' in kw and as_json:
+                 kw['body'] = json.dumps(kw['body'])
+                 kw['headers']["Content-Type"] = "application/json"
+             response, content = self.http.request(url, **kw)
+             try:
+                 content = json.loads(content)
+             except:
+                 pass
+             response['status'] = int(response['status'])
+             if response['status'] < 200 or response['status'] > 299:
+                 if retries:
+                     continue
+                 elif raise_errors:
+                     raise RequestException(response, content, url, kw)
+             return response, content
 
     def connect(self):
         with file(self.kw.get('key', 'key.p12'), 'rb') as key_file:
