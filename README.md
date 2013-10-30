@@ -1,2 +1,18 @@
 gme_tools
 =========
+
+Example usage:
+    python mapsengineupload.py --email=1011838452455@developer.gserviceaccount.com --key=~/Projects/skytruth/mapserver/key.p12 --projectid=06136759344167181854 --attribution="Copyright SKYTRUTH" --tags="testegil,testother" ~/Downloads/Test/*/*.tiff
+
+The directory contains the following matching files:
+    /home/redhog/Downloads/Test/Blubb/2008Tioga_0_35000.tiff
+    /home/redhog/Downloads/Test/Blah/2008Tioga_0_10000.tiff
+    /home/redhog/Downloads/Test/Blah/2008Tioga_10000_0.tiff
+
+And the following auxillary files:
+    /home/redhog/Downloads/Test/Blubb/__directory__.info
+    /home/redhog/Downloads/Test/Blah/__directory__.info
+    /home/redhog/Downloads/Test/Blah/2008Tioga_0_10000.info
+
+Example content for one such info file:
+    {"tags": ["Blubbetiblubb and more stuff", "Even more stuff"]}
