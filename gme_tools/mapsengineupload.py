@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# SETUPTOOLS_DO_NOT_WRAP
 import datetime
 import time
 import sys
