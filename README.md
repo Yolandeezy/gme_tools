@@ -31,3 +31,8 @@ Example content for one such info file:
     virtualenv deps
     source deps/bin/activate
     python setup.py install
+
+# How to get Google Maps API Key
+
+    https://developers.google.com/maps-engine/documentation/oauth/serviceaccount
+    
