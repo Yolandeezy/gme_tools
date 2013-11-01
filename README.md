@@ -31,3 +31,8 @@ Example content for one such info file:
     virtualenv deps
     source deps/bin/activate
     python setup.py install
+
+# How to go Google Maps Engine key
+
+    Server to Server Authentication (service accounts)- allows your server to edit google maps engine
+    https://developers.google.com/maps-engine/documentation/oauth/serviceaccount
